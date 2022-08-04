@@ -14,9 +14,6 @@ class AnimatedCharacter(var duration: Float = 1f, charType: Int): Character(char
                     var leftLowerArmRotation: Float, var rightLowerArmRotation: Float,
                     var leftUpperArmRotation: Float, var rightUpperArmRotation: Float,
                     var headrotation: Float)
-    {
-
-    }
     fun stopAnimation()
     {
         animationStopped = true

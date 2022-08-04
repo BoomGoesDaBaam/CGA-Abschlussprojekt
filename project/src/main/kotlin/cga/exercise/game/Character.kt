@@ -75,6 +75,26 @@ open class Character(type: Int): Renderable(mutableListOf<Mesh>(), Matrix4f()) {
         translate(Vector3f(0f, 7f, -5f))
         */
     }
+    fun applyKeyFrame(frame: AnimatedCharacter.KeyFrame)
+    {
+        var vertexdata: FloatArray = player!!.meshes[0].vertexdata.clone()
+
+        rotateLeftFoot(frame.leftFootRotation, vertexdata)
+        rotateRightFoot(frame.rightFootRotation, vertexdata)
+        rotateLeftLowerLeg(frame.leftLowerLegRotation, vertexdata)
+        rotateRightLowerLeg(frame.rightLowerLegRotation, vertexdata)
+        rotateLeftUpperLeg(frame.leftUpperLegRotation, vertexdata)
+        rotateRightUpperLeg(frame.rightUpperLegRotation, vertexdata)
+        rotateRightHand(frame.rightHandRotation, vertexdata)
+        rotateLeftHand(frame.leftHandRotation, vertexdata)
+        rotateLeftLowerArm(frame.leftLowerArmRotation, vertexdata)
+        rotateRightLowerArm(frame.rightLowerArmRotation, vertexdata)
+        rotateLeftUpperArm(frame.leftUpperArmRotation, vertexdata)
+        rotateRightUpperArm(frame.rightUpperArmRotation, vertexdata)
+        rotateHead(frame.headrotation, vertexdata)
+
+        player!!.meshes[0].updateVertecies(vertexdata)
+    }
     fun rotateRightFoot(angle: Float, vertexdata: FloatArray)
     {
         rotateEverythingInBetween(vertexdata, Vector3f(-2f,-5.1f, 2f),
