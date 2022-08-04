@@ -10,20 +10,30 @@ Fügen Sie ihren Projektnamen hinzu
 
 # Teammitglieder
 Listen Sie hier alle Teammitglieder auf.
-- Armin Anfang
-- Berta Beliebig
-- Carola Coautor
+- Mbengi, Christian
+- Henskes, Patricia
+- Behrendt, Dominik
 
 # Featureliste
 Listen Sie hier alle relevanten Features als Liste mit sinnvoller Reihenfolge auf mit Angabe wer das Feature implementiert hat.
 Bei starker Ungleicheit der Features behalten wir uns eine individuelle Notenvergabe vor.
 
-Bspw.
-
-- Verschiedene Kameramodelle (Wechsel zwischen orthographischer und perspektivischer Kamera mittels "c") (Berta)
-- Dynamische Kamera (Steuerung mittels Maus und "WASD" auf der Tastatur) (Carola und Armin)
-- Verschiedene Shaderprogramme (Wechsel mittels "s") (Carola)
-- ...
+- Spiellogik (Dominik)
+- Fly-Through + orthographische + perspektivische Kamera (wechsel mittels "e") (Dominik)
+- Wechsel zwischen verschiedenen Shadern (mittels "c") 
+ (Zwischen Phon, Blinn-Phong, Toon und einem Schwarz-Weiß Shader) (Patricia)
+- Studio eingerichtet (Dominik)
+- Spielfiguren platziert (Patricia)
+- Toon-Shader + Schwarz-Weiß Shader (Dominik)
+- Interaktive Kamerafeatures (Dominik):   Zoom (hinein mittels "i" und herraus mittels "o", sowie "r" zum zurücksetzen)
+                                          Beobachtungsmodus mit "m" und "u" zum verlassen
+- Animationen (Dominik)
+- Kollisionserkennung zwischen Spieler und Schollen (Patricia)
+- Spiel zurücksetzen (mittels "f") (Patricia)
 
 # Quellenverzeichnis
 Listen Sie hier ALLE Quellen der genutzten Ressourcen auf.
+Treppe, Deckenbeleuchtung und Wand: https://www.cgtrader.com/items/2976026/download-page
+Holztextur: 				                https://freestocktextures.com/texture/closeup-wood-grain-plank,315.html
+Metalltextur:				                https://freestocktextures.com/texture/shiny-silver-metallic-paper,1038.html
+Charakter:                          https://drive.google.com/file/d/120gZss5DA0SRaMW5YxP0x3CnOlJDTSme/view (https://www.youtube.com/watch?v=f3Cr8Yx3GGA)
