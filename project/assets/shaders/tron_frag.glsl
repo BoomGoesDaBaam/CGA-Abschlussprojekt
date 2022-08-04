@@ -69,12 +69,12 @@ void main(){
 
     //Drückt eine Textur einen Farbwert aus muss man den Gammakorrektur-Schritt anwenden, hat
     //man anderweitige Daten, sind diese meistens schon linear.
-    vec4 diffTexture = vec4(invgamma(texture(diff, vertexData.texcoord).rgb), 1f);
-    vec4 emitTexture = vec4(invgamma(texture(emit, vertexData.texcoord).rgb), 1f);
-    vec4 specTexture = vec4(invgamma(texture(spec, vertexData.texcoord).rgb), 1f);
+    vec4 diffTexture = vec4(invgamma(texture(diff, vertexData.texcoord).rgb), 1.0f);
+    vec4 emitTexture = vec4(invgamma(texture(emit, vertexData.texcoord).rgb), 1.0f);
+    vec4 specTexture = vec4(invgamma(texture(spec, vertexData.texcoord).rgb), 1.0f);
 
 
-    color = emitTexture + diffTexture * vec4(lightColorAmbiente, 1f);
+    color = emitTexture + diffTexture * vec4(lightColorAmbiente, 1.0f);
     if(shader == 0 || shader == 1)
     {
         //Emissive Reflektion (M_e) + Ambiente Reflektion
@@ -113,13 +113,13 @@ void main(){
                     //vec3 viewDir = normalize(viewPos - vertexData.position);
                     vec3 halfwayDir = normalize(normalize(vertexData.LightDir[i]) + normalize(vertexData.ViewDir));
                     float spec = pow(max(dot(N, halfwayDir), 0.0), shininess);
-                    colorSpecular = specTexture * vec4(lightcolor[i], 1f) * spec * 20;
+                    colorSpecular = specTexture * vec4(lightcolor[i], 1.0f) * spec * 20;
                 }
                 else
                 {
                     float cosBeta = max(0.0f, dot(R, V));
                     float cosBetak = pow(cosBeta, shininess);// shininess = Glanzvariable
-                    colorSpecular = specTexture * cosBetak * vec4(lightcolor[i], 1f) * 20;//emitPoints = Regenbogen  lightcolor[i]=Normale Lampenfarbe
+                    colorSpecular = specTexture * cosBetak * vec4(lightcolor[i], 1.0f) * 20;//emitPoints = Regenbogen  lightcolor[i]=Normale Lampenfarbe
                 }
                 //Attenuation + Summe diffusive und spekulare reflektion mal lichtfarbe abhängig von Entfernung
                 color += (colorDiffuse + colorSpecular) * (1/(pow(length(vertexData.LightDir[i]),2)));
@@ -139,8 +139,8 @@ void main(){
                 if(shader == 1)
                 {
                     vec3 halfwayDir = normalize(normalize(vertexData.SpotLightDir[i]) + normalize(vertexData.ViewDir));
-                    float spec = pow(max(dot(N, halfwayDir), 0f), shininess);
-                    colorSpecular = specTexture * vec4(spotlightcolor[i], 1f) * spec;
+                    float spec = pow(max(dot(N, halfwayDir), 0.0f), shininess);
+                    colorSpecular = specTexture * vec4(spotlightcolor[i], 1.0f) * spec;
                 }
                 else
                 {
@@ -225,12 +225,12 @@ color += (colorDiffuse + colorSpecular) * intensity;
         {color = color*0.2;}
         //color = vec4(0.2,0.1,0.1,1.0);
     }
-    color = vec4(gamma(color.rgb), 1f);
+    color = vec4(gamma(color.rgb), 1.0f);
     if(shader == 3)
     {
         //float intensity = dot(normalize(vertexData.ViewDir),normalize(vertexData.normal));
         //color = intensity * vec4(1f,0f,0f,0f);
-        color =  ((color.r + color.g + color.b)/3) * vec4(1f,1f,1f,1f);
+        color =  ((color.r + color.g + color.b)/3) * vec4(1.0f,1.0f,1.0f,1.0f);
     }
     //color = vec4(gamma(color.rgb), 1f);
 }
