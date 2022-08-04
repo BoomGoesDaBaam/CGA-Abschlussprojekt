@@ -16,6 +16,18 @@ open class Character: Renderable(mutableListOf<Mesh>(), Matrix4f()) {
         Texture2D("assets/textures/char.png", true)
     )
 
+    var fanMat = Material(
+        Texture2D("assets/textures/fan.png", true),
+        Texture2D("assets/textures/fan.png", true),
+        Texture2D("assets/textures/fan.png", true)
+    )
+
+    var moderatorMat = Material(
+        Texture2D("assets/textures/moderator.png", true),
+        Texture2D("assets/textures/moderator.png", true),
+        Texture2D("assets/textures/moderator.png", true)
+    )
+
     var player = ModelLoader.loadModel("assets/models/player/player.obj", 0f, 0f, 0f)
     var sphere = ModelLoader.loadModel("assets/models/mini_sphere.obj", 0f, 0f, 0f)
 
