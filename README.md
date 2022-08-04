@@ -38,7 +38,7 @@ Kamera:
 
 Idee:
 - Spielidee (Dominik + Patricia)
-- Spiellogik programmiert (Dominik)
+- Spiellogik programmiert/Map-Generierung (Dominik)
 - Kollisionserkennung zwischen Spieler und Schollen (Patricia)
 - Spiel zurücksetzen (mittels "f") (Patricia)
 
