@@ -240,7 +240,6 @@ class Scene(private val window: GameWindow) {
 
         var fan5 = AnimatedCharacter(charType = 1)
         fan5.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-80f, 70f, 70f, 0f, 0f, 20f,20f,20f,20f,10f))
-       
         fan5.translate(Vector3f(-5.5f, 3.4f, 18.1f))
         fan5.scale(Vector3f(0.25f, 0.25f, 0.25f))
         fan5.rotate(0f,Math.toRadians(180.0).toFloat(), 0f)
