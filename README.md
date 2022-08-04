@@ -6,7 +6,7 @@ Bitte nutzen Sie dieses Template-Repository ("Use this template") und entwickeln
 Löschen Sie als erstes den Abschnitt CGAProjekt in dieser Datei und füllen Sie den Rest entsprechend aus für die Abgabe.
 
 # Projektname
-Fügen Sie ihren Projektnamen hinzu
+Die Reise ins Ungewisse
 
 # Teammitglieder
 Listen Sie hier alle Teammitglieder auf.
@@ -18,16 +18,27 @@ Listen Sie hier alle Teammitglieder auf.
 Listen Sie hier alle relevanten Features als Liste mit sinnvoller Reihenfolge auf mit Angabe wer das Feature implementiert hat.
 Bei starker Ungleicheit der Features behalten wir uns eine individuelle Notenvergabe vor.
 
-- Spiellogik (Dominik)
-- Fly-Through + orthographische + perspektivische Kamera (wechsel mittels "e") (Dominik)
+Rendering:
+- Studio eingrichtet (Dominik)
+- Spielfiguren platziert (Patricia)
+
+Shaderprogrammierung:
+- Toon-Shader (Dominik)
+- Schwarz-Weiß Shader (Dominik)
 - Wechsel zwischen verschiedenen Shadern (mittels "c") 
  (Zwischen Phon, Blinn-Phong, Toon und einem Schwarz-Weiß Shader) (Patricia)
-- Studio eingerichtet (Dominik)
-- Spielfiguren platziert (Patricia)
-- Toon-Shader + Schwarz-Weiß Shader (Dominik)
+
+Transformationen:
+- Animationen (Dominik)
+
+Kamera:
+- Fly-Through + orthographische + perspektivische Kamera (wechsel mittels "e") (Dominik)
 - Interaktive Kamerafeatures (Dominik):   Zoom (hinein mittels "i" und herraus mittels "o", sowie "r" zum zurücksetzen)
                                           Beobachtungsmodus mit "m" und "u" zum verlassen
-- Animationen (Dominik)
+
+Idee:
+- Spielidee (Dominik + Patricia)
+- Spiellogik programmiert/Map-Generierung (Dominik)
 - Kollisionserkennung zwischen Spieler und Schollen (Patricia)
 - Spiel zurücksetzen (mittels "f") (Patricia)
 
@@ -35,5 +46,5 @@ Bei starker Ungleicheit der Features behalten wir uns eine individuelle Notenver
 Listen Sie hier ALLE Quellen der genutzten Ressourcen auf.
 Treppe, Deckenbeleuchtung und Wand: https://www.cgtrader.com/items/2976026/download-page
 Holztextur: 				                https://freestocktextures.com/texture/closeup-wood-grain-plank,315.html
-Metalltextur:				                https://freestocktextures.com/texture/shiny-silver-metallic-paper,1038.html
-Charakter:                          https://drive.google.com/file/d/120gZss5DA0SRaMW5YxP0x3CnOlJDTSme/view (https://www.youtube.com/watch?v=f3Cr8Yx3GGA)
+Metalltextur:				               https://freestocktextures.com/texture/shiny-silver-metallic-paper,1038.html
+Charakter:                      https://drive.google.com/file/d/120gZss5DA0SRaMW5YxP0x3CnOlJDTSme/view (https://www.youtube.com/watch?v=f3Cr8Yx3GGA)
