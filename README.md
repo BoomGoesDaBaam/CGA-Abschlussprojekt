@@ -6,7 +6,7 @@ Bitte nutzen Sie dieses Template-Repository ("Use this template") und entwickeln
 Löschen Sie als erstes den Abschnitt CGAProjekt in dieser Datei und füllen Sie den Rest entsprechend aus für die Abgabe.
 
 # Projektname
-Die Reise ins Ungewisse
+Die Reise durchs Ungewisse
 
 # Teammitglieder
 Listen Sie hier alle Teammitglieder auf.
