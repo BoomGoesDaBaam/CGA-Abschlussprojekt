@@ -29,7 +29,7 @@ class Scene(private val window: GameWindow) {
     private val shadowShader: ShaderProgram
     var player = ModelLoader.loadModel("assets/models/sphere.obj",0f,0f,0f)
     var playerIsMoving = false
-    var animatedChar = AnimatedCharacter(0.75f)
+    var animatedChar = AnimatedCharacter(0.75f, 0)
     var playerCanMove = false
     //var motorcycleRenderable = ModelLoader.loadModel("assets/Light Cycle/Light Cycle/HQ_Movie cycle.obj",Math.toRadians(-90.0f),Math.toRadians(90.0f),0.0f)
 
@@ -202,7 +202,7 @@ class Scene(private val window: GameWindow) {
         //objekte[4].translate(Vector3f(0f, 5f, 0f))
 
 
-        var fan1 = AnimatedCharacter()
+        var fan1 = AnimatedCharacter(charType = 1)
         fan1.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-80f, 70f, 70f, 0f, 0f, 20f,20f,20f,20f,10f))
         fan1.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-70f, 70f, 80f, 0f, 0f, 20f,20f,20f,20f,5f))
         fan1.translate(Vector3f(10f, 3.4f, -0.75f))
@@ -211,7 +211,7 @@ class Scene(private val window: GameWindow) {
         fan1.startAnimation()
         objekte.add(fan1)
 
-        var fan2 = AnimatedCharacter()
+        var fan2 = AnimatedCharacter(charType =1)
         fan2.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-80f, 70f, 70f, 0f, 0f, 20f,20f,20f,20f,10f))
         fan2.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-70f, 70f, 80f, 0f, 0f, 20f,20f,20f,20f,5f))
         fan2.translate(Vector3f(11.5f, 3.4f, 0.4f))
@@ -220,7 +220,7 @@ class Scene(private val window: GameWindow) {
         fan2.startAnimation()
         objekte.add(fan2)
 
-        var fan3 = AnimatedCharacter()
+        var fan3 = AnimatedCharacter(charType = 1)
         fan3.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-80f, 70f, 70f, 0f, 0f, 20f,20f,20f,20f,10f))
         fan3.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-70f, 70f, 80f, 0f, 0f, 20f,20f,20f,20f,5f))
         fan3.translate(Vector3f(-11.0f, 1.4f, 5.0f))
@@ -228,6 +228,15 @@ class Scene(private val window: GameWindow) {
         fan3.rotate(0f,Math.toRadians(-60.0).toFloat(), 0f)
         fan3.startAnimation()
         objekte.add(fan3)
+
+        var moderator = AnimatedCharacter(charType = 2)
+        moderator.addKeyFrame(AnimatedCharacter.KeyFrame(0f,0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, -0f, 10f))
+        moderator.addKeyFrame(AnimatedCharacter.KeyFrame(0f,0f, 0f, 0f, 0f, 0f, 5f, 5f, 5f, 5f, 5f, 5f, -10f))
+        //moderator.rotate(0f,Math.toRadians(180.0).toFloat(), 0f)
+        moderator.translate(Vector3f(-1f, 1f, -2f))
+        moderator.scale(Vector3f(0.25f, 0.25f, 0.25f))
+        moderator.startAnimation()
+        objekte.add(moderator)
 
         animatedChar.addKeyFrame(AnimatedCharacter.KeyFrame(30f,-45f, 0f, -45f, 45f, -45f, -15f, 45f, -15f, 45f, 45f, -15f, 10f))
         animatedChar.addKeyFrame(AnimatedCharacter.KeyFrame(-45f,30f, -45f, 0f, -45f, 45f, 45f, -15f, 45f, -15f, -15f, 45f, -10f))

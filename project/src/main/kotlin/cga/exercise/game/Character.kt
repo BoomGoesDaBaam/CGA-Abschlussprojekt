@@ -8,7 +8,7 @@ import org.joml.Matrix4f
 import org.joml.Vector2f
 import org.joml.Vector3f
 
-open class Character: Renderable(mutableListOf<Mesh>(), Matrix4f()) {
+open class Character(type: Int): Renderable(mutableListOf<Mesh>(), Matrix4f()) {
 
     var playerMat = Material(
         Texture2D("assets/textures/char.png", true),
@@ -33,7 +33,14 @@ open class Character: Renderable(mutableListOf<Mesh>(), Matrix4f()) {
 
 
     init {
-        player!!.meshes[0].mat = playerMat
+        if(type == 0)
+            player!!.meshes[0].mat = playerMat
+        else if(type == 1)
+            player!!.meshes[0].mat = fanMat
+        else if(type == 2)
+            player!!.meshes[0].mat = moderatorMat
+
+
         player?.parent = this
 /*
         vertexdata[0] = 10.0f

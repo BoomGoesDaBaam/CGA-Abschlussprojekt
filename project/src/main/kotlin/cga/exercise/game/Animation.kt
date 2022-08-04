@@ -1,6 +1,6 @@
 package cga.exercise.game
 
-class AnimatedCharacter(var duration: Float = 1f): Character() {
+class AnimatedCharacter(var duration: Float = 1f, charType: Int): Character(charType) {
     var frames = mutableListOf<KeyFrame>()
     var curKeyFrame = 0
     var passedTime = 0.0f
