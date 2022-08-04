@@ -2,10 +2,7 @@ package cga.exercise.game
 
 import cga.exercise.components.Logic.CellField
 import cga.exercise.components.camera.TronCamera
-import cga.exercise.components.geometry.Material
-import cga.exercise.components.geometry.Mesh
-import cga.exercise.components.geometry.Renderable
-import cga.exercise.components.geometry.VertexAttribute
+import cga.exercise.components.geometry.*
 import cga.exercise.components.lights.PointLight
 import cga.exercise.components.lights.PointLightComposite
 import cga.exercise.components.lights.Spotlight
@@ -17,14 +14,11 @@ import cga.framework.GameWindow
 import cga.framework.ModelLoader
 import cga.framework.OBJLoader
 import org.joml.Matrix4f
-import org.joml.Vector2f
 import org.joml.Vector2i
 import org.joml.Vector3f
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12
-import org.lwjgl.opengl.GL13
-import org.lwjgl.opengl.GL30
 
 
 /**
@@ -33,43 +27,57 @@ import org.lwjgl.opengl.GL30
 class Scene(private val window: GameWindow) {
     private val staticShader: ShaderProgram     //Shader
     private val shadowShader: ShaderProgram
-
-    var sphereMatrix: Matrix4f = Matrix4f()     //Matrix Weltposition
-    var groundMatrix: Matrix4f = Matrix4f()     //Matrix Weltposition
-
-    //Aufgabe 2.1
-    //var sphereMashes = loadMeshes("assets\\models\\sphere.obj") //gibt meshes zurück
-    //var groundMashes = loadMeshes("assets\\models\\ground.obj")
-
-    var sphere = ModelLoader.loadModel("assets/models/sphere.obj",0f,0f,0f)
-
-
+    var player = ModelLoader.loadModel("assets/models/sphere.obj",0f,0f,0f)
+    var playerIsMoving = false
+    var animatedChar = AnimatedCharacter(0.75f)
+    var playerCanMove = false
     //var motorcycleRenderable = ModelLoader.loadModel("assets/Light Cycle/Light Cycle/HQ_Movie cycle.obj",Math.toRadians(-90.0f),Math.toRadians(90.0f),0.0f)
 
-     var field = CellField();
+    //min = 7 max =
+    var pathLength = 12
+
+     var field = CellField(pathLength);
 
     var texDiff = Texture2D("assets/textures/ground_diff.png", true)
     var texEmit = Texture2D("assets/textures/ground_emit.png", true)
     var texSpec = Texture2D("assets/textures/ground_spec.png", true)
+    private var texMetal = Texture2D("assets/textures/metal.jpg", true)
+
+    var stairsMat = Material(Texture2D("assets/textures/wood.jpg", true),
+        Texture2D("assets/textures/wood.jpg", true),
+        Texture2D("assets/textures/wood.jpg", true))
+
+    var metalMat = Material(texMetal, texMetal, texMetal)
 
 
     var groundMaterial: Material? = null
 
-    var groundRenderable: Renderable? = null
+
+    //var studio = Renderable(loadMeshes("assets/models/studio3.obj"), Matrix4f());
+
+    var objekte = mutableListOf<Renderable>()
+
+
+    //var groundRenderable: Renderable? = null
     //var textureGround = Renderable(loadMeshes("assets\\textures\\ground_emit.obj"), Matrix4f());
     var lastXMousePos: Double = 0.0
     var lastYMousePos: Double = 0.0
 
-    var camera: TronCamera = TronCamera(modelMatrix = Matrix4f())  //Kamera schaut immer auf sphere drauf
-    var cameraPlayer = TronCamera(modelMatrix = Matrix4f(), transformable = sphere) //Kamera schaut immer auf sphere drauf
+    var cameras = mutableListOf<TronCamera>()
+    var flyingCam: TronCamera = TronCamera(modelMatrix = Matrix4f())  //Kamera schaut immer auf sphere drauf
+    var playerCamera: TronCamera = TronCamera(modelMatrix = Matrix4f(), transformable = player)  //Kamera schaut immer auf sphere drauf
+    var orthogonalCamera: TronCamera = TronCamera(modelMatrix = Matrix4f())
 
+    var curActivCamera = 0
 
-    var pointLights: PointLightComposite = PointLightComposite(listOf(
+    var pointLights: PointLightComposite = PointLightComposite(mutableListOf(
         PointLight(Vector3f(0f,2f,0f), Vector3f(0f,1f,1f), null),
-        PointLight(Vector3f(10f,2f,-10f), Vector3f(1f,1f,0f), null),
-        PointLight(Vector3f(20f,2f,-20f), Vector3f(1f,1f,0f), null),
-        PointLight(Vector3f(-10f,2f,-10f), Vector3f(1f,0f,1f), null),
-        PointLight(Vector3f(-20f,2f,-20f), Vector3f(1f,0f,1f), null)))
+        PointLight(Vector3f(0f,0f,0f), Vector3f(1f,1f,0f), flyingCam),
+        PointLight(Vector3f(200f,-200f,0f), Vector3f(1f,1f,0f), null),
+        PointLight(Vector3f(200f,-200f,0f), Vector3f(1f,0f,1f), null),
+        PointLight(Vector3f(200f,-200f,0f), Vector3f(1f,0f,1f), null)
+    ))
+
 /*
 
     var pointLights: PointLightComposite = PointLightComposite(listOf(
@@ -83,16 +91,18 @@ class Scene(private val window: GameWindow) {
 
 
    var spotlights: SpotlightComposite = SpotlightComposite(mutableListOf(
-       Spotlight(Vector3f(10f,1f,-10f), Vector3f(0f,1f,1f),null, 50f,70f),
-       Spotlight(Vector3f(10f,1f,-10f), Vector3f(0f,1f,1f),null, 40f,60f),
-       Spotlight(Vector3f(10f,1f,-10f), Vector3f(0f,1f,1f),null, 30f,50f),
-       Spotlight(Vector3f(10f,1f,-10f), Vector3f(0f,1f,1f),null, 20f,40f),
-       Spotlight(Vector3f(10f,1f,-10f), Vector3f(0f,1f,1f),null, 20f,40f)))
+       Spotlight(Vector3f(100f,0f,0f), Vector3f(0f,1f,1f),null, 50f,70f),
+       Spotlight(Vector3f(100f,1f,10f), Vector3f(0f,1f,1f),null, 40f,60f),
+       Spotlight(Vector3f(100f,1f,10f), Vector3f(0f,1f,1f),null, 30f,50f),
+       Spotlight(Vector3f(100f,1f,10f), Vector3f(0f,1f,1f),null, 20f,40f),
+       Spotlight(Vector3f(100f,1f,10f), Vector3f(0f,1f,1f),null, 20f,40f)))
 
-    var curShader = 2
-    var maxShader = 3
+    var curShader = 3
+    var nShader = 4
     var shaderChangeCooldown = 0f
     var focusObjectCoolown = 0f
+    var perspectivCoolown = 0f
+    var cameraCoolown = 0f
     //scene setup
     init {
         staticShader = ShaderProgram("assets/shaders/tron_vert.glsl", "assets/shaders/tron_frag.glsl")
@@ -107,9 +117,13 @@ class Scene(private val window: GameWindow) {
         glEnable(GL_DEPTH_TEST); GLError.checkThrow()
         glDepthFunc(GL_LESS); GLError.checkThrow()
 
+
+
         glEnable ( GL_CULL_FACE )
         glFrontFace ( GL_CCW )
         glCullFace ( GL_BACK )
+
+
         //Punkte müssen gegen den Uhrzeigersinn definiert werden
 
         glClearColor (0.0f , 0.0f , 0.0f , 1.0f); GLError . checkThrow ()
@@ -129,8 +143,119 @@ class Scene(private val window: GameWindow) {
         //GL_LINEAR_MIPMAP_LINEAR = Pixel haben weiche Übergänge
         //GL_NEAREST = Bild sieht schärfer aus
 
+        spotlights.list[0].rotate(Math.toRadians(45.0).toFloat(), 0f, 0f)
 
 
+        flyingCam.translate(Vector3f(0f, 10f, 10f))
+
+        staticShader.setUniform("lightColorAmbiente", Vector3f(0f,0.01f,0f))
+        //startPos
+        player!!.translate(field.getCellPosition(1,1).add(Vector3f(0f,1f, 0f)))
+        player!!.scale(Vector3f(0.1f, 0.1f, 0.1f))
+        player!!.translate(Vector3f(0f,2f,0f))
+
+        pointLights.setVisibilityOfLight(0,1.0f)
+        pointLights.setVisibilityOfLight(1,1.0f)
+
+        cameras.add(flyingCam)
+        cameras.add(playerCamera)
+        cameras.add(orthogonalCamera)
+
+        orthogonalCamera.rotate(Math.toRadians(-90.0).toFloat(), 0f ,0f)
+        orthogonalCamera.translate(Vector3f(0f,-2f,0f))
+        orthogonalCamera.orthogonalCamera = true
+
+        objekte.add(Renderable(loadMeshes("assets/models/stairs2.obj"), Matrix4f()))
+        objekte.add(Renderable(loadMeshes("assets/models/stairs2.obj"), Matrix4f()))
+        objekte.add(Renderable(loadMeshes("assets/models/light.obj"), Matrix4f()))
+        objekte.add(Renderable(loadMeshes("assets/models/Wall.obj"), Matrix4f()))
+
+        objekte[0].meshes[0].mat = stairsMat;
+        objekte[1].meshes[0].mat = stairsMat;
+
+        objekte[0].rotate(0f,Math.toRadians(90.0).toFloat(), 0f)
+        objekte[0].scale(Vector3f(4f,4f,4f))
+        objekte[0].translate(Vector3f(-3f,-0.35f,2f))
+
+
+        objekte[1].rotate(0f,Math.toRadians(-90.0).toFloat(), 0f)
+        objekte[1].scale(Vector3f(4f,4f,4f))
+        objekte[1].translate(Vector3f(1f,-0.35f,2f))
+
+        objekte[2].translate(Vector3f(-0.25f,12f,5f)) // Lights
+        objekte[2].scale(Vector3f(1.5f,1.5f,1.5f))
+        objekte[2].meshes[0].mat = metalMat
+
+        orthogonalCamera.parent = objekte[2]
+
+        objekte[3].translate(Vector3f(-0.25f,-0.75f,20f))   //Wall
+        objekte[3].rotate(0f,Math.toRadians(-90.0).toFloat(), 0f)
+        objekte[3].meshes[0].mat = metalMat
+
+
+        //objekte.add(Renderable(loadMeshes("assets/models/player/upper_leg.obj"), Matrix4f()))
+        //objekte[4].translate(Vector3f(0f, 5f, 0f))
+
+
+        var fan1 = AnimatedCharacter()
+        fan1.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-80f, 70f, 70f, 0f, 0f, 20f,20f,20f,20f,10f))
+        fan1.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-70f, 70f, 80f, 0f, 0f, 20f,20f,20f,20f,5f))
+        fan1.translate(Vector3f(10f, 3.4f, -0.75f))
+        fan1.scale(Vector3f(0.25f, 0.25f, 0.25f))
+        fan1.rotate(0f,Math.toRadians(-20.0).toFloat(), 0f)
+        fan1.startAnimation()
+        objekte.add(fan1)
+
+        animatedChar.addKeyFrame(AnimatedCharacter.KeyFrame(30f,-45f, 0f, -45f, 45f, -45f, -15f, 45f, -15f, 45f, 45f, -15f, 10f))
+        animatedChar.addKeyFrame(AnimatedCharacter.KeyFrame(-45f,30f, -45f, 0f, -45f, 45f, 45f, -15f, 45f, -15f, -15f, 45f, -10f))
+        //animatedChar.translate(Vector3f(0f,10f,0f))
+        animatedChar.scale(Vector3f(3f, 3f, 3f))
+        animatedChar.rotate(0f,Math.toRadians(180.0).toFloat(), 0f)
+        animatedChar.translate(Vector3f(0f, 1f, 0f))
+        animatedChar.parent = player
+
+
+        /*
+        objekte.add(Renderable(loadMeshes("assets/models/player/upper_leg.obj"), Matrix4f()))
+        objekte[6].translate(Vector3f(0f, 7f, 0f))
+        objekte.add(Renderable(loadMeshes("assets/models/player/chest.obj"), Matrix4f()))
+        objekte[7].translate(Vector3f(0f, 8f, 0f))
+        objekte.add(Renderable(loadMeshes("assets/models/player/left_hand.obj"), Matrix4f()))
+        objekte[8].translate(Vector3f(-3f, 6f, 0f))
+        objekte.add(Renderable(loadMeshes("assets/models/player/right_hand.obj"), Matrix4f()))
+        objekte[9].translate(Vector3f(3f, 6f, 0f))
+        objekte.add(Renderable(loadMeshes("assets/models/player/lower_arm.obj"), Matrix4f()))
+        objekte[10].translate(Vector3f(-3f, 7f, 0f))
+        objekte.add(Renderable(loadMeshes("assets/models/player/upper_arm.obj"), Matrix4f()))
+        objekte[11].translate(Vector3f(-3f, 8f, 0f))
+        objekte.add(Renderable(loadMeshes("assets/models/player/head.obj"), Matrix4f()))
+        objekte[12].translate(Vector3f(0f, 11f, 0f))
+        objekte.add(Renderable(loadMeshes("assets/models/player/hat.obj"), Matrix4f()))
+        objekte[13].translate(Vector3f(0f, 12f, 0f))
+        //objekte.add(Renderable(loadMeshes("assets/models/stairs.obj"), Matrix4f()))
+        //objekte.add(Renderable(loadMeshes("assets/models/light.obj"), Matrix4f()))
+        //objekte.add(Renderable(loadMeshes("assets/models/Wall.obj"), Matrix4f()))
+*/
+
+        //studio.translate(Vector3f(0f,2f,0f))
+
+        /*
+        player!!.rotate(Math.toRadians(90.0).toFloat(),0f,0f)
+        player!!.rotate(0f, Math.toRadians(90.0).toFloat(),0f)
+        var axis = AxisAngle4d()
+        player!!.getModelMatrix().getRotation(axis)
+
+        player!!.rotate(-axis.x.toFloat(),-axis.y.toFloat(), -axis.z.toFloat())
+        var axis2 = AxisAngle4d()
+        player!!.getModelMatrix().getRotation(axis2)
+
+        var k = 23
+        */
+
+
+
+
+        /*
         groundMaterial = Material(
             texDiff,
             texEmit,
@@ -140,16 +265,12 @@ class Scene(private val window: GameWindow) {
         )
 
         groundRenderable = Renderable(loadMeshes("assets\\models\\ground.obj", groundMaterial), groundMatrix);
-
+*/
         //motorcycleRenderable!!.scale(Vector3f(0.8f))
         //motorcycleRenderable!!.translate(Vector3f(0.0f,1f,0.0f))
 
 
         //camera.rotate(Math.toRadians(-35f),0f,0f)
-        camera.translate(Vector3f(0f, 10f, 10f))
-
-        staticShader.setUniform("lightColorAmbiente", Vector3f(0f,0.01f,0f))
-
 
         //Shadow Mapping
         // Framebuffer for Shadow Map
@@ -220,8 +341,7 @@ class Scene(private val window: GameWindow) {
 */
 
     //shadowShader.use()
-        var pos = field.getCellPos(3,1).add(Vector3f(0f,2.5f,0f))
-        sphere!!.translate(pos)
+        //var pos = field.getCellPos(3,1).add(Vector3f(0f,2.5f,0f))
     }
     fun loadMeshes(path: String, mat: Material? = null) : MutableList<Mesh> {
         val objRes: OBJLoader.OBJResult = OBJLoader.loadOBJ(path)
@@ -253,19 +373,27 @@ class Scene(private val window: GameWindow) {
         //mesh!!.render()
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         //mesh?.render()
-        camera.bind(staticShader) //binden der Kamera
-
+        cameras[curActivCamera].bind(staticShader) //binden der Kamera
 
         pointLights.bind(staticShader)//Reihenfolge ist kritisch???
 
-        spotlights.bind(staticShader, camera.getCalculateViewMatrix())
+        spotlights.bind(staticShader, flyingCam.getCalculateViewMatrix())
 
         field!!.render(staticShader, shadowShader)
 
-        sphere!!.render(staticShader, shadowShader)
+        for(i in 0..objekte.size-1)
+        {
+            objekte[i].render(staticShader, shadowShader)
+        }
 
-        groundRenderable!!.render(staticShader, shadowShader) //rendern mit shader
+        if(cameras[curActivCamera] != playerCamera)
+        {
+            animatedChar.render(staticShader, shadowShader)
+        }
 
+        //groundRenderable!!.render(staticShader, shadowShader) //rendern mit shader
+
+        //field!!.translate(Vector3f(0f,0f,25f))
         /* //Aufagebe 2.1 manuell
         staticShader.setUniform("view_matrix", Matrix4f(), false)
         staticShader.setUniform("projection_matrix", Matrix4f(), false)
@@ -281,39 +409,65 @@ class Scene(private val window: GameWindow) {
 
     fun update(dt: Float, t: Float)
     {
-        camera.update(dt)
+        flyingCam.update(dt)
+        field.update(dt, player!!.getWorldPosition())
 
+        animatedChar.update(dt)
+        objekte.forEach {
+            if(it is AnimatedCharacter)
+            {
+                it.update(dt)
+            }
+        }
+        playerCanMove = field.gameState == CellField.state.PLAYER_STEPS
 
+        if(window.getKeyState(GLFW.GLFW_KEY_ENTER))
+        {
+            field.continueGame()
+        }
         if(window.getKeyState(GLFW.GLFW_KEY_O))
         {
-            camera.zoom(1.01f*dt)
+            flyingCam.zoom(dt)
         }
         if(window.getKeyState(GLFW.GLFW_KEY_I))
         {
-            camera.zoom(0.95f*dt)
+            flyingCam.zoom(-dt)
         }
         if(window.getKeyState(GLFW.GLFW_KEY_R))
         {
-            camera.resetZoom()
+            flyingCam.resetZoom()
         }
         if(window.getKeyState(GLFW.GLFW_KEY_M) && focusObjectCoolown <= 0f)
         {
-            camera.lockToPos(getNearestObjectToPoint(camera.getWorldPosition()), 5f)
+           // var topLeft = field.getTopLeftOftCells()
+            //var camPos = camera.getWorldPosition()
+            //var nearestPos = getNearestObjectToPoint(camera.getWorldPosition())
+            flyingCam.lockToPos(getNearestObjectToPoint(flyingCam.getWorldPosition()), 5f)
             focusObjectCoolown=2f
         }else if(focusObjectCoolown > 0f)
         {
             focusObjectCoolown -= dt
         }
+
+        if(window.getKeyState(GLFW.GLFW_KEY_P) && perspectivCoolown <= 0f)
+        {
+            flyingCam.switchPerspective()
+            perspectivCoolown=2f
+        }else if(perspectivCoolown > 0f)
+        {
+            perspectivCoolown -= dt
+        }
+
         if(window.getKeyState(GLFW.GLFW_KEY_U))
         {
-            camera.unlock()
+            flyingCam.unlock()
         }
         if(shaderChangeCooldown > 0)
         shaderChangeCooldown -= dt
         if(window.getKeyState(GLFW.GLFW_KEY_C) && shaderChangeCooldown <= 0)
         {
             curShader++
-            if(curShader == maxShader)
+            if(curShader == nShader)
             {
                 curShader = 0
             }
@@ -321,13 +475,13 @@ class Scene(private val window: GameWindow) {
             shaderChangeCooldown = 1f
         }
         //camera.translate(Vector3f(0.1f,0.1f,0.1f))
-        if(window.getKeyState(GLFW.GLFW_KEY_UP))
+        if(window.getKeyState(GLFW.GLFW_KEY_T)) //GLFW_KEY_UP
         {
-            camera.translate(Vector3f(0f,0f,-0.1f))
+            flyingCam.translate(Vector3f(0f,0f,-0.1f))
         }
-        if(window.getKeyState(GLFW.GLFW_KEY_DOWN))
+        if(window.getKeyState(GLFW.GLFW_KEY_G)) // GLFW_KEY_DOWN
         {
-            camera.translate(Vector3f(0f,0f,0.1f))
+            flyingCam.translate(Vector3f(0f,0f,0.1f))
         }
         if(window.getKeyState(GLFW.GLFW_KEY_H))
         {
@@ -337,37 +491,83 @@ class Scene(private val window: GameWindow) {
         {
             field.showPath()
         }
+        var oldPlayerIsMoving = playerIsMoving
+        playerIsMoving = window.getKeyState(GLFW.GLFW_KEY_W) || window.getKeyState(GLFW.GLFW_KEY_A) || window.getKeyState(GLFW.GLFW_KEY_S) || window.getKeyState(GLFW.GLFW_KEY_D)
 
-        var xVel = 0.0f
-        if(window.getKeyState(GLFW.GLFW_KEY_W))
+        if(playerIsMoving != oldPlayerIsMoving)
         {
-            xVel = -7f*dt
-            sphere!!.translate(Vector3f(0.0f,0.0f,xVel))
-        }else if(window.getKeyState(GLFW.GLFW_KEY_S))
-        {
-            xVel = 7f*dt
-            sphere!!.translate(Vector3f(0.0f,0.0f,xVel))
+            if(playerIsMoving)
+            {
+                animatedChar.startAnimation()
+            }
+            else
+            {
+                animatedChar.stopAnimation()
+            }
+        }
+        if(playerCanMove) {
+            if (window.getKeyState(GLFW.GLFW_KEY_W)) {
+                var zAxis = player!!.getWorldZAxis()
+                var yAxis = player!!.getWorldYAxis()
+                player!!.preTranslate(Vector3f(yAxis.x - zAxis.x, 0f, yAxis.z - zAxis.z).normalize().mul(0.05f))
+            }
+            if (window.getKeyState(GLFW.GLFW_KEY_A)) {
+                var xAxis = player!!.getWorldXAxis()
+                player!!.preTranslate(Vector3f(-xAxis.x, 0f, -xAxis.z).normalize().mul(0.05f))
+            }
+            if (window.getKeyState(GLFW.GLFW_KEY_S)) {
+
+                var zAxis = player!!.getWorldZAxis()
+                var xAxis = player!!.getWorldYAxis()
+                player!!.preTranslate(Vector3f(-xAxis.x + zAxis.x, 0f, -xAxis.z + zAxis.z).normalize().mul(0.05f))
+            }
+            if (window.getKeyState(GLFW.GLFW_KEY_D)) {
+                var xAxis = player!!.getWorldXAxis()
+                player!!.preTranslate(Vector3f(xAxis.x, 0f, xAxis.z).normalize().mul(0.05f))
+            }
         }
 
-
-        if(window.getKeyState(GLFW.GLFW_KEY_A))
+        if(window.getKeyState(GLFW.GLFW_KEY_R))
         {
-            sphere!!.rotate(0.0f, 0.05f, 0.0f)
+            player!!.resetModelMatrix()
+            player!!.translate(field.getCellPosition(1,1).add(Vector3f(0f,1f, 0f)))
+            player!!.scale(Vector3f(0.1f, 0.1f, 0.1f))
+            player!!.translate(Vector3f(0f, 2f, 0f))
+            field.startGame(pathLength)
         }
-        if(window.getKeyState(GLFW.GLFW_KEY_D))
+        if(cameraCoolown <= 0f) {
+            if(window.getKeyState(GLFW.GLFW_KEY_E)) {
+                curActivCamera++
+                cameraCoolown = 1f
+                if (curActivCamera == cameras.size)
+                    curActivCamera = 0
+                if(cameras[curActivCamera] != playerCamera)
+                {
+                    resetPlayerPosition()
+                }
+            }
+        }
+        else
         {
-            sphere!!.rotate(0.0f, -0.05f, 0.0f)
+            cameraCoolown -=dt
         }
+    }
+    fun resetPlayerPosition()
+    {
+        var pos = player!!.getPosition()
+        player!!.resetModelMatrix()
+        player!!.translate(pos)
+        player!!.scale(Vector3f(0.1f, 0.1f, 0.1f))
     }
 
     fun getNearestObjectToPoint(pos: Vector3f): Vector3f
     {
-        var nearest = groundRenderable!!.getWorldPosition()
+        var nearest = Vector3f(100f,100f,100f)//groundRenderable!!.getWorldPosition()
 
         var nearestCell: Vector2i = field.getNearestCellToPos(pos)
-        if(nearest.distance(pos) > field.getCellPos(nearestCell.x, nearestCell.y).distance(pos))
+        if(nearest.distance(pos) > field.getCellPosition(nearestCell.x, nearestCell.y).distance(pos))
         {
-            nearest = field.getCellPos(nearestCell.x, nearestCell.y)
+            nearest = field.getCellPosition(nearestCell.x, nearestCell.y)
         }
         return nearest
     }
@@ -382,8 +582,17 @@ class Scene(private val window: GameWindow) {
         lastYMousePos = ypos;
 
 
-        camera.rotate((deltayPos * 0.002).toFloat(),0f,0f);
-        camera.rotateAroundPoint(0f,(deltaxPos * 0.002).toFloat(),0f,camera.getWorldPosition().add(camera.getWorldZAxis().normalize().mul(0.1f)))
+        var transformable: Transformable = cameras[curActivCamera]
+        transformable = when(curActivCamera)
+        {
+            0 -> cameras[curActivCamera]
+            1 -> player!!
+            else -> player!!
+        }
+        if(curActivCamera == 2) return
+
+        transformable.rotate((deltayPos * 0.002).toFloat(),0f,0f);
+        transformable.rotateAroundPoint(0f,(deltaxPos * 0.002).toFloat(),0f,transformable.getPosition().add(transformable.getZAxis().normalize().mul(0.1f)))
 
     }
 

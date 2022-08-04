@@ -20,7 +20,7 @@ import org.lwjgl.opengl.GL30
  *
  * Created by Fabian on 16.09.2017.
  */
-class Mesh(vertexdata: FloatArray, indexdata: IntArray, attributes: Array<VertexAttribute>, var mat:Material? = null) {
+class Mesh(val vertexdata: FloatArray, var indexdata: IntArray, var attributes: Array<VertexAttribute>, var mat:Material? = null) {
     //private data
     private var vao = 0
     private var vbo = 0
@@ -55,6 +55,12 @@ class Mesh(vertexdata: FloatArray, indexdata: IntArray, attributes: Array<Vertex
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexdata, GL_STATIC_DRAW);
         //Daten auf die Grafikkarte laden. Erstellt und Initlisiert ein Buffer Object
     }
+    fun updateVertecies(vertexdataNew: FloatArray)
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);                         //activate id => Zustandmaschine
+        glBufferData(GL_ARRAY_BUFFER, vertexdataNew, GL_STATIC_DRAW);
+    }
+
 
     /**
      * renders the mesh

@@ -8,7 +8,8 @@ class Material(var diff: Texture2D,
                var emit: Texture2D,
                var specular: Texture2D,
                var shininess: Float = 50.0f,
-               var tcMultiplier : Vector2f = Vector2f(1.0f)){
+               var tcMultiplier : Vector2f = Vector2f(1.0f),
+               var normal: Texture2D? = null){
 
     fun bind(shaderProgram: ShaderProgram) {
         //                        name      textureunit
@@ -20,9 +21,20 @@ class Material(var diff: Texture2D,
         shaderProgram.setUniform("diff",1)
         diff.bind(1)
 
-        shaderProgram.setUniform("spec",2)
+        shaderProgram.setUniform("spec", 2)
         specular.bind(2)
 
+
+        if(normal != null)
+        {
+            shaderProgram.setUniform("normal",3)
+            normal!!.bind(3)
+            shaderProgram.setUniform("useNormalMapping", 1)
+        }
+        else
+        {
+            shaderProgram.setUniform("useNormalMapping", 0)
+        }
         //Der tcMultiplier gibt an, wie häufig eine Textur auf einem Objekt wiederholt wird
         //also wird eine Textur über das ganze Objekt gezogen
         shaderProgram.setUniform("shininess", shininess)

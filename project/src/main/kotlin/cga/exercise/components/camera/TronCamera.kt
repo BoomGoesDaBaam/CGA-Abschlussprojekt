@@ -7,6 +7,7 @@ import org.joml.Vector3f
 
 class TronCamera(var fieldOfView: Float = 1.57f, var aspectRatio: Float = 16f / 9f, var nearPlane: Float= 0.1f, var farPlane: Float= 100.0f, modelMatrix: Matrix4f = Matrix4f(), transformable: Transformable? = null): ICamera, Transformable(modelMatrix, transformable){
     private var lookAt: Vector3f? = null
+    var orthogonalCamera = false
     override fun getCalculateViewMatrix(): Matrix4f {
         //lookat(position of camera(eye), the point in space to look at(center), the direction of 'up'
         //Normalized Device Space
@@ -24,12 +25,15 @@ class TronCamera(var fieldOfView: Float = 1.57f, var aspectRatio: Float = 16f / 
         //farPlane = Entfernung der far plane zur camera
         return Matrix4f().perspective(fieldOfView, aspectRatio, nearPlane, farPlane)
     }
-    fun getOrthogonalCamera(): Matrix4f {
-        //fieldOfView = the vertical field of view in radians
-        //aspectRatio = seitenverhältnis
+    fun getCalculateOrthogonalMatrix(): Matrix4f {
+        //ersten vier Parameter = view Space
         //nearPlane = Entfernung der near plane zur camera
         //farPlane = Entfernung der far plane zur camera
-        return Matrix4f().ortho(-35f, 35f, -35f, 35f, nearPlane, farPlane)
+        return Matrix4f().ortho(-20f, 20f, -20f, 20f, nearPlane, farPlane)
+    }
+    fun switchPerspective()
+    {
+        orthogonalCamera = !orthogonalCamera
     }
     fun resetZoom()
     {
@@ -38,7 +42,7 @@ class TronCamera(var fieldOfView: Float = 1.57f, var aspectRatio: Float = 16f / 
     fun lockToPos(pos: Vector3f, distance: Float)
     {
         resetModelMatrix()
-        preTranslate(Vector3f(pos).add(Vector3f(0f,5f,distance)))
+        preTranslate(Vector3f(pos).add(Vector3f(3f,3f,distance)))
         lookAt = Vector3f(pos)
     }
     fun update(dt: Float)
@@ -53,13 +57,17 @@ class TronCamera(var fieldOfView: Float = 1.57f, var aspectRatio: Float = 16f / 
     fun zoom(factor: Float)
     {
         //Sichtwinkel in Grad. Desto kleiner, desto kleiner ist der dargestellte Bereich
-        if(factor > 0 && fieldOfView * factor < Math.PI)
-        fieldOfView *= factor
+        if(fieldOfView + fieldOfView*factor > 0 && fieldOfView + fieldOfView*factor < Math.PI)
+        fieldOfView += fieldOfView*factor
     }
 
     override fun bind(shader: ShaderProgram) {
         shader.use()
         shader.setUniform("view_matrix",getCalculateViewMatrix(),false);
-        shader.setUniform("projection_matrix",getCalculateProjectionMatrix(),false);
+        if(orthogonalCamera)    //orthogonale camera = alle Objekte werden gleichgroß gezeichnet
+            shader.setUniform("projection_matrix",getCalculateOrthogonalMatrix(),false);
+        else
+            shader.setUniform("projection_matrix",getCalculateProjectionMatrix(),false);
+
     }
 }

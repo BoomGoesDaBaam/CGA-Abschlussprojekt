@@ -8,13 +8,27 @@ class SpotlightComposite(var list: List<Spotlight>): ISpotLight{
     var colorsBuffer: FloatArray = FloatArray(3 * 5);
     var posBuffer: FloatArray = FloatArray(3 * 5);
     var spotlightorientations: FloatArray = FloatArray(3 * 5);
+    var enabled: FloatArray = FloatArray(3 * list.size);
 
     var innerCones: FloatArray = FloatArray(5);
     var outerCones: FloatArray = FloatArray(5);
     init {
+        for(i in 0..4)
+        {
+            enabled[i] = 0.0f
+        }
+    }
+    fun setVisibilityOfLight(index: Int, value: Float)
+    {
+        if(index >= 0 && index < list.size)
+            enabled[index] = value
     }
 
     override fun bind(shaderProgram: ShaderProgram, viewMatrix: Matrix4f) {
+        for(i in 0..(list.size)* 3 - 1)
+        {
+            enabled[i] = 0.0f
+        }
         for(i in 0..(list.size)* 3 - 1)
         {
             colorsBuffer[i] = (list[i/3].color.get(i%3))
@@ -35,6 +49,8 @@ class SpotlightComposite(var list: List<Spotlight>): ISpotLight{
 
         shaderProgram.setUniformVec3Array("spotlightcolor", colorsBuffer)
         shaderProgram.setUniformVec3Array("spotlightPos", posBuffer)
+
+        shaderProgram.setUniformFloatArray("spotLightIsEnabled", enabled)
 
 
         shaderProgram.setUniformVec3Array("spotlightorien",spotlightorientations);

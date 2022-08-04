@@ -18,7 +18,7 @@ out struct VertexData   // gibt vertex daten weiter
 {
     vec3 position;
     vec2 texcoord;
-    vec3 normal;
+    vec3 normal;    //acctually tangent
     vec3 LightDir[5];
     vec3 SpotLightDir[5];
     vec3 ViewDir;
