@@ -5,7 +5,7 @@ import cga.exercise.components.shader.ShaderProgram
 import org.joml.Matrix4f
 import org.joml.Vector3f
 
-open class PointLight(pos: Vector3f, val color: Vector3f, parent: Transformable?): Transformable(Matrix4f(),parent),IPointLight {
+open class PointLight(pos: Vector3f, var color: Vector3f, parent: Transformable?): Transformable(Matrix4f(),parent),IPointLight {
 
     init {
         translate(pos)

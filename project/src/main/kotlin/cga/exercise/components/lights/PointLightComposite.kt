@@ -24,10 +24,11 @@ class PointLightComposite(var list: MutableList<PointLight>): IPointLight {
             enabled[i] = 0.0f
         }
     }
-    fun setVisibilityOfLight(index: Int, value: Float)
+    fun setVisibilityOfLight(shaderProgram: ShaderProgram,index: Int, value: Float)
     {
         if(index >= 0 && index < list.size)
-        enabled[index] = value
+            enabled[index] = value
+        shaderProgram.setUniformFloatArray("pointLightIsEnabled", enabled)
     }
 
     override fun bind(shaderProgram: ShaderProgram, name: String) {

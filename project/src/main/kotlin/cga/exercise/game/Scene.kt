@@ -72,30 +72,18 @@ class Scene(private val window: GameWindow) {
 
     var pointLights: PointLightComposite = PointLightComposite(mutableListOf(
         PointLight(Vector3f(0f,2f,0f), Vector3f(0f,1f,1f), null),
-        PointLight(Vector3f(0f,0f,0f), Vector3f(1f,1f,0f), flyingCam),
+        PointLight(Vector3f(0f,0f,0f), Vector3f(1f,1f,0f), null),
         PointLight(Vector3f(200f,-200f,0f), Vector3f(1f,1f,0f), null),
         PointLight(Vector3f(200f,-200f,0f), Vector3f(1f,0f,1f), null),
         PointLight(Vector3f(200f,-200f,0f), Vector3f(1f,0f,1f), null)
     ))
 
-/*
-
-    var pointLights: PointLightComposite = PointLightComposite(listOf(
-        PointLight(Vector3f(0f,2f,0f), Vector3f(0f,1f,1f), null),
-        PointLight(Vector3f(0f,2f,0f), Vector3f(1f,1f,0f), null),
-        PointLight(Vector3f(0f,2f,0f), Vector3f(1f,1f,0f), null),
-        PointLight(Vector3f(0f,2f,0f), Vector3f(1f,0f,1f), null),
-        PointLight(Vector3f(0f,2f,0f), Vector3f(1f,0f,1f), null)))
-    */
-
-
-
    var spotlights: SpotlightComposite = SpotlightComposite(mutableListOf(
-       Spotlight(Vector3f(100f,0f,0f), Vector3f(0f,1f,1f),null, 50f,70f),
-       Spotlight(Vector3f(100f,1f,10f), Vector3f(0f,1f,1f),null, 40f,60f),
-       Spotlight(Vector3f(100f,1f,10f), Vector3f(0f,1f,1f),null, 30f,50f),
-       Spotlight(Vector3f(100f,1f,10f), Vector3f(0f,1f,1f),null, 20f,40f),
-       Spotlight(Vector3f(100f,1f,10f), Vector3f(0f,1f,1f),null, 20f,40f)))
+       Spotlight(Vector3f(0f,2f,0f), Vector3f(0f,1f,0f),null, 5f,20f),
+       Spotlight(Vector3f(0f,2f,0f), Vector3f(0f,1f,0f),null, 5f,20f),
+       Spotlight(Vector3f(0f,2f,0f), Vector3f(0f,1f,0f),null, 5f,20f),
+       Spotlight(Vector3f(0f,2f,0f), Vector3f(0f,1f,0f),null, 5f,20f),
+       Spotlight(Vector3f(0f,2f,0f), Vector3f(0f,1f,0f),null, 5f,20f)))
 
     var curShader = 3
     var nShader = 4
@@ -143,9 +131,6 @@ class Scene(private val window: GameWindow) {
         //GL_LINEAR_MIPMAP_LINEAR = Pixel haben weiche Übergänge
         //GL_NEAREST = Bild sieht schärfer aus
 
-        spotlights.list[0].rotate(Math.toRadians(45.0).toFloat(), 0f, 0f)
-
-
         flyingCam.translate(Vector3f(0f, 10f, 10f))
 
         staticShader.setUniform("lightColorAmbiente", Vector3f(0f,0.01f,0f))
@@ -154,8 +139,8 @@ class Scene(private val window: GameWindow) {
         player!!.scale(Vector3f(0.1f, 0.1f, 0.1f))
         player!!.translate(Vector3f(0f,2f,0f))
 
-        pointLights.setVisibilityOfLight(0,1.0f)
-        pointLights.setVisibilityOfLight(1,1.0f)
+        //pointLights.setVisibilityOfLight(staticShader, 0,1.0f)
+        //pointLights.setVisibilityOfLight(staticShader,1,1.0f)
 
         cameras.add(flyingCam)
         cameras.add(playerCamera)
@@ -191,6 +176,26 @@ class Scene(private val window: GameWindow) {
         objekte[3].translate(Vector3f(-0.25f,-0.75f,20f))   //Wall
         objekte[3].rotate(0f,Math.toRadians(-90.0).toFloat(), 0f)
         objekte[3].meshes[0].mat = metalMat
+
+        spotlights.list[0].rotate(Math.toRadians(-90.0).toFloat(), 0f, 0f)
+        spotlights.list[0].rotate(0f, Math.toRadians(-15.0).toFloat(), 0f)
+        spotlights.list[0].parent = objekte[2]
+        spotlights.setVisibilityOfLight(staticShader, 0, 1f)
+
+        spotlights.list[1].rotate(Math.toRadians(-90.0).toFloat(), 0f, 0f)
+        spotlights.list[1].rotate(0f, Math.toRadians(15.0).toFloat(), 0f)
+        spotlights.list[1].parent = objekte[2]
+        spotlights.setVisibilityOfLight(staticShader, 1, 1f)
+
+        spotlights.list[2].rotate(Math.toRadians(-120.0).toFloat(), 0f, 0f)
+        spotlights.list[2].rotate(0f, Math.toRadians(-15.0).toFloat(), 0f)
+        spotlights.list[2].parent = objekte[2]
+        spotlights.setVisibilityOfLight(staticShader, 2, 1f)
+
+        spotlights.list[3].rotate(Math.toRadians(-120.0).toFloat(), 0f, 0f)
+        spotlights.list[3].rotate(0f, Math.toRadians(15.0).toFloat(), 0f)
+        spotlights.list[3].parent = objekte[2]
+        spotlights.setVisibilityOfLight(staticShader, 3, 1f)
 
 
         //objekte.add(Renderable(loadMeshes("assets/models/player/upper_leg.obj"), Matrix4f()))
@@ -377,7 +382,8 @@ class Scene(private val window: GameWindow) {
 
         pointLights.bind(staticShader)//Reihenfolge ist kritisch???
 
-        spotlights.bind(staticShader, flyingCam.getCalculateViewMatrix())
+        spotlights.bind(staticShader, cameras[curActivCamera].getCalculateViewMatrix())
+
 
         field!!.render(staticShader, shadowShader)
 
@@ -411,6 +417,15 @@ class Scene(private val window: GameWindow) {
     {
         flyingCam.update(dt)
         field.update(dt, player!!.getWorldPosition())
+
+        if(field.gameState == CellField.state.FAILED)
+        {
+            spotlights.list.forEach { it.color = Vector3f(1f, 0f, 0f)}
+        }
+        else
+        {
+            spotlights.list.forEach { it.color = Vector3f(0f, 1f, 0f)}
+        }
 
         animatedChar.update(dt)
         objekte.forEach {

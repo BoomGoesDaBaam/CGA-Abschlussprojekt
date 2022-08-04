@@ -18,17 +18,15 @@ class SpotlightComposite(var list: List<Spotlight>): ISpotLight{
             enabled[i] = 0.0f
         }
     }
-    fun setVisibilityOfLight(index: Int, value: Float)
+    fun setVisibilityOfLight(shaderProgram: ShaderProgram,index: Int, value: Float)
     {
-        if(index >= 0 && index < list.size)
+        if(index >= 0 && index < list.size) {
             enabled[index] = value
+            shaderProgram.setUniformFloatArray("spotLightIsEnabled", enabled)
+        }
     }
 
     override fun bind(shaderProgram: ShaderProgram, viewMatrix: Matrix4f) {
-        for(i in 0..(list.size)* 3 - 1)
-        {
-            enabled[i] = 0.0f
-        }
         for(i in 0..(list.size)* 3 - 1)
         {
             colorsBuffer[i] = (list[i/3].color.get(i%3))
