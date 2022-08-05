@@ -302,7 +302,7 @@ class Scene(private val window: GameWindow) {
         moderator.translate(Vector3f(-1f, 1f, -2f))
         moderator.scale(Vector3f(0.25f, 0.25f, 0.25f))
         moderator.startAnimation()
-        objekte.add(moderator)
+        objekte.add(moderator)  
 
         animatedChar.addKeyFrame(AnimatedCharacter.KeyFrame(30f,-45f, 0f, -45f, 45f, -45f, -15f, 45f, -15f, 45f, 45f, -15f, 10f))
         animatedChar.addKeyFrame(AnimatedCharacter.KeyFrame(-45f,30f, -45f, 0f, -45f, 45f, 45f, -15f, 45f, -15f, -15f, 45f, -10f))
