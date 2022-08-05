@@ -230,10 +230,7 @@ class Scene(private val window: GameWindow) {
         //fan3.startAnimation()
         objekte.add(fan3)
 
-
-
         var fan4 = Character(1)
-
         fan4.applyKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-70f, 70f, 80f, 0f, 0f, 20f,20f,20f,20f,5f))
         //fan4.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-80f, 70f, 70f, 0f, 0f, 20f,20f,20f,20f,10f))
         //fan4.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-70f, 70f, 80f, 0f, 0f, 20f,20f,20f,20f,5f))
@@ -252,6 +249,50 @@ class Scene(private val window: GameWindow) {
         //fan5.startAnimation()
         objekte.add(fan5)
 
+        var fan6 = Character(1)
+        fan6.applyKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-70f, 70f, 80f, 0f, 0f, 20f,20f,20f,20f,5f))
+        fan6.translate(Vector3f(-8.5f, 3.4f, 17.5f))
+        fan6.scale(Vector3f(0.25f, 0.25f, 0.25f))
+        fan6.rotate(0f,Math.toRadians(165.0).toFloat(), 0f)
+        objekte.add(fan6)
+
+        var fan7 = Character(1)
+        fan7.applyKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-70f, 70f, 80f, 0f, 0f, 20f,20f,20f,20f,5f))
+        fan7.translate(Vector3f(-11.75f, 2.4f, 13.5f))
+        fan7.scale(Vector3f(0.25f, 0.25f, 0.25f))
+        fan7.rotate(0f,Math.toRadians(-235.0).toFloat(), 0f)
+        objekte.add(fan7)
+
+        var fan8 = Character(1)
+        fan8.applyKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-70f, 70f, 80f, 0f, 0f, 20f,20f,20f,20f,5f))
+        //fan2.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-80f, 70f, 70f, 0f, 0f, 20f,20f,20f,20f,10f))
+        //fan2.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-70f, 70f, 80f, 0f, 0f, 20f,20f,20f,20f,5f))
+        fan8.translate(Vector3f(10.5f, 2.4f, 1.2f))
+        fan8.scale(Vector3f(0.25f, 0.25f, 0.25f))
+        fan8.rotate(0f,Math.toRadians(-30.0).toFloat(), 0f)
+        //fan2.startAnimation()
+        objekte.add(fan8)
+
+        var fan9 = Character(1)
+        fan9.applyKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-70f, 70f, 80f, 0f, 0f, 20f,20f,20f,20f,5f))
+        //fan2.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-80f, 70f, 70f, 0f, 0f, 20f,20f,20f,20f,10f))
+        //fan2.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-70f, 70f, 80f, 0f, 0f, 20f,20f,20f,20f,5f))
+        fan9.translate(Vector3f(13.4f, 2.4f, 10f))
+        fan9.scale(Vector3f(0.25f, 0.25f, 0.25f))
+        fan9.rotate(0f,Math.toRadians(-100.0).toFloat(), 0f)
+        //fan2.startAnimation()
+        objekte.add(fan9)
+
+        var fan10 = Character(1)
+        fan10.applyKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-70f, 70f, 80f, 0f, 0f, 20f,20f,20f,20f,5f))
+        //fan3.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-80f, 70f, 70f, 0f, 0f, 20f,20f,20f,20f,10f))
+        //fan3.addKeyFrame(AnimatedCharacter.KeyFrame(0f, 0f, -70f,-70f, 70f, 80f, 0f, 0f, 20f,20f,20f,20f,5f))
+        fan10.translate(Vector3f(-10.9f, 2.4f, 1.75f))
+        fan10.scale(Vector3f(0.25f, 0.25f, 0.25f))
+        fan10.rotate(0f,Math.toRadians(50.0).toFloat(), 0f)
+        //fan3.startAnimation()
+        objekte.add(fan10)
+
 
         var moderator = AnimatedCharacter(charType = 2)
         moderator.addKeyFrame(AnimatedCharacter.KeyFrame(0f,0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, -0f, 10f))
@@ -260,7 +301,7 @@ class Scene(private val window: GameWindow) {
         moderator.translate(Vector3f(-1f, 1f, -2f))
         moderator.scale(Vector3f(0.25f, 0.25f, 0.25f))
         moderator.startAnimation()
-        objekte.add(moderator)
+        objekte.add(moderator)  
 
         animatedChar.addKeyFrame(AnimatedCharacter.KeyFrame(30f,-45f, 0f, -45f, 45f, -45f, -15f, 45f, -15f, 45f, 45f, -15f, 10f))
         animatedChar.addKeyFrame(AnimatedCharacter.KeyFrame(-45f,30f, -45f, 0f, -45f, 45f, 45f, -15f, 45f, -15f, -15f, 45f, -10f))
