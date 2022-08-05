@@ -7,6 +7,9 @@ import org.joml.Vector3f
 
 class TronCamera(var fieldOfView: Float = 1.57f, var aspectRatio: Float = 16f / 9f, var nearPlane: Float= 0.1f, var farPlane: Float= 100.0f, modelMatrix: Matrix4f = Matrix4f(), transformable: Transformable? = null): ICamera, Transformable(modelMatrix, transformable){
     private var lookAt: Vector3f? = null
+    private var appliedRotation = Vector3f(0f,0f,0f)
+    private var lookAtT: Transformable? = null
+    private var rotDistance = 0f
     var orthogonalCamera = false
     override fun getCalculateViewMatrix(): Matrix4f {
         //lookat(position of camera(eye), the point in space to look at(center), the direction of 'up'
@@ -39,20 +42,31 @@ class TronCamera(var fieldOfView: Float = 1.57f, var aspectRatio: Float = 16f / 
     {
         fieldOfView = 1.57f
     }
-    fun lockToPos(pos: Vector3f, distance: Float)
+    fun lockToPos(pos: Vector3f, trans: Transformable, distance: Float)
     {
+        rotDistance = distance
+        lookAtT = trans
         resetModelMatrix()
         preTranslate(Vector3f(pos).add(Vector3f(3f,3f,distance)))
         lookAt = Vector3f(pos)
     }
     fun update(dt: Float)
     {
+        //var rotationDelta = Vector3f(0f, 1f * dt, 0f)
+        //appliedRotation.add(rotationDelta)
         if (lookAt != null)
-            rotateAroundPoint(0f, 1f * dt, 0f, lookAt!!)
+        {
+            var rotAround = lookAtT!!.getWorldPosition()
+            //resetModelMatrix()
+            //translate(rotAround.add(Vector3f(3f,3f,rotDistance)))
+            rotateAroundPoint(0f, 1f * dt, 0f, rotAround)
+            //appliedRotation.add(Vector3f(0f, 1f * dt, 0f))
+        }
     }
     fun unlock()
     {
         lookAt = null
+        lookAtT = null
     }
     fun zoom(factor: Float)
     {

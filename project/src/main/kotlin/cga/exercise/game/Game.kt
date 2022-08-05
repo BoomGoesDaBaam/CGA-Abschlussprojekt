@@ -9,7 +9,7 @@ class Game(width: Int,
            height: Int,
            fullscreen: Boolean = false,
            vsync: Boolean = false,
-           title: String = "Supergame",
+           title: String = "Die Reise durchs Ungewisse",
            GLVersionMajor: Int = 3,
            GLVersionMinor: Int = 3) : GameWindow(width, height, fullscreen, vsync, GLVersionMajor, GLVersionMinor, title, 4, 120.0f) {
 

@@ -33,8 +33,8 @@ class Scene(private val window: GameWindow) {
     var playerCanMove = false
     //var motorcycleRenderable = ModelLoader.loadModel("assets/Light Cycle/Light Cycle/HQ_Movie cycle.obj",Math.toRadians(-90.0f),Math.toRadians(90.0f),0.0f)
 
-    //min = 7 max =
-    var pathLength = 12
+    //min = 7 max = 23
+    var pathLength = 10
 
      var field = CellField(pathLength);
 
@@ -48,9 +48,6 @@ class Scene(private val window: GameWindow) {
         Texture2D("assets/textures/wood.jpg", true))
 
     var metalMat = Material(texMetal, texMetal, texMetal)
-
-
-    var groundMaterial: Material? = null
 
 
     //var studio = Renderable(loadMeshes("assets/models/studio3.obj"), Matrix4f());
@@ -85,12 +82,14 @@ class Scene(private val window: GameWindow) {
        Spotlight(Vector3f(0f,2f,0f), Vector3f(0f,1f,0f),null, 5f,20f),
        Spotlight(Vector3f(0f,2f,0f), Vector3f(0f,1f,0f),null, 5f,20f)))
 
-    var curShader = 3
+    var curShader = 1
     var nShader = 4
     var shaderChangeCooldown = 0f
     var focusObjectCoolown = 0f
     var perspectivCoolown = 0f
     var cameraCoolown = 0f
+    var diffCoolown = 0f
+    var focusedObject: Transformable? = null
     //scene setup
     init {
         staticShader = ShaderProgram("assets/shaders/tron_vert.glsl", "assets/shaders/tron_frag.glsl")
@@ -270,7 +269,7 @@ class Scene(private val window: GameWindow) {
         animatedChar.rotate(0f,Math.toRadians(180.0).toFloat(), 0f)
         animatedChar.translate(Vector3f(0f, 1f, 0f))
         animatedChar.parent = player
-
+        objekte.add(animatedChar)
 
         /*
         objekte.add(Renderable(loadMeshes("assets/models/player/upper_leg.obj"), Matrix4f()))
@@ -441,12 +440,9 @@ class Scene(private val window: GameWindow) {
 
         for(i in 0..objekte.size-1)
         {
-            objekte[i].render(staticShader, shadowShader)
-        }
+            if(objekte[i] != animatedChar || (objekte[i] == animatedChar && cameras[curActivCamera] != playerCamera))
+                objekte[i].render(staticShader, shadowShader)
 
-        if(cameras[curActivCamera] != playerCamera)
-        {
-            animatedChar.render(staticShader, shadowShader)
         }
 
         //groundRenderable!!.render(staticShader, shadowShader) //rendern mit shader
@@ -467,7 +463,6 @@ class Scene(private val window: GameWindow) {
 
     fun update(dt: Float, t: Float)
     {
-        flyingCam.update(dt)
         field.update(dt, player!!.getWorldPosition())
 
         if(field.gameState == CellField.state.FAILED)
@@ -504,30 +499,24 @@ class Scene(private val window: GameWindow) {
         {
             flyingCam.resetZoom()
         }
+        if(focusedObject != null) {
+            flyingCam.update(dt)
+        }
+
         if(window.getKeyState(GLFW.GLFW_KEY_M) && focusObjectCoolown <= 0f)
         {
-           // var topLeft = field.getTopLeftOftCells()
-            //var camPos = camera.getWorldPosition()
-            //var nearestPos = getNearestObjectToPoint(camera.getWorldPosition())
-            flyingCam.lockToPos(getNearestObjectToPoint(flyingCam.getWorldPosition()), 5f)
+            setNearestObjectToPoint(flyingCam.getWorldPosition())
             focusObjectCoolown=2f
+            flyingCam.lockToPos(focusedObject!!.getWorldPosition(), focusedObject!!, 5f)
         }else if(focusObjectCoolown > 0f)
         {
             focusObjectCoolown -= dt
         }
 
-        if(window.getKeyState(GLFW.GLFW_KEY_P) && perspectivCoolown <= 0f)
-        {
-            flyingCam.switchPerspective()
-            perspectivCoolown=2f
-        }else if(perspectivCoolown > 0f)
-        {
-            perspectivCoolown -= dt
-        }
-
         if(window.getKeyState(GLFW.GLFW_KEY_U))
         {
             flyingCam.unlock()
+            focusedObject = null
         }
         if(shaderChangeCooldown > 0)
         shaderChangeCooldown -= dt
@@ -618,6 +607,20 @@ class Scene(private val window: GameWindow) {
         {
             cameraCoolown -=dt
         }
+        if(window.getKeyState(GLFW.GLFW_KEY_P) && diffCoolown <= 0f)
+        {
+            if(pathLength < 25)
+                pathLength++
+            diffCoolown = 0.5f
+        }else if(window.getKeyState(GLFW.GLFW_KEY_L) && diffCoolown <= 0f)
+        {
+            if(pathLength > 0)
+                pathLength--
+            diffCoolown = 0.5f
+        }else
+        {
+            diffCoolown -=dt
+        }
     }
     fun resetPlayerPosition()
     {
@@ -627,16 +630,27 @@ class Scene(private val window: GameWindow) {
         player!!.scale(Vector3f(0.1f, 0.1f, 0.1f))
     }
 
-    fun getNearestObjectToPoint(pos: Vector3f): Vector3f
+    fun setNearestObjectToPoint(pos: Vector3f)
     {
+        var nearestT:Transformable? = null
         var nearest = Vector3f(100f,100f,100f)//groundRenderable!!.getWorldPosition()
-
-        var nearestCell: Vector2i = field.getNearestCellToPos(pos)
-        if(nearest.distance(pos) > field.getCellPosition(nearestCell.x, nearestCell.y).distance(pos))
+        var nearestCellIndex: Vector2i = field.getNearestCellToPos(pos)
+        var nearestCell = field.matrix[nearestCellIndex.x][nearestCellIndex.y]
+        //check ice
+        if(nearest.distance(pos) > field.getCellPosition(nearestCellIndex.x, nearestCellIndex.y).distance(pos))
         {
-            nearest = field.getCellPosition(nearestCell.x, nearestCell.y)
+            nearest = field.getCellPosition(nearestCellIndex.x, nearestCellIndex.y)
+            nearestT = nearestCell
         }
-        return nearest
+        for(i in 0..objekte.size-1)
+        {
+            if(nearest.distance(pos) > objekte[i].getWorldPosition().distance(pos))
+            {
+                nearest = objekte[i].getWorldPosition()
+                nearestT = objekte[i]
+            }
+        }
+        focusedObject = nearestT
     }
     fun onKey(key: Int, scancode: Int, action: Int, mode: Int) {}
 
@@ -656,7 +670,7 @@ class Scene(private val window: GameWindow) {
             1 -> player!!
             else -> player!!
         }
-        if(curActivCamera == 2) return
+        if(curActivCamera == 2 || focusedObject != null) return
 
         transformable.rotate((deltayPos * 0.002).toFloat(),0f,0f);
         transformable.rotateAroundPoint(0f,(deltaxPos * 0.002).toFloat(),0f,transformable.getPosition().add(transformable.getZAxis().normalize().mul(0.1f)))
